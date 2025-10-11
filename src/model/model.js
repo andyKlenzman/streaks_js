@@ -33,7 +33,7 @@ let currentView = VIEW_MODES.FOCUS;
 //////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////
-// TODO: Do I need this?? Prob wheen firebase gets involeved
+// TODO:NOWEHRE is it documented how the data is modeled....wow. I need typescript.
 const syncGroups = async () => {
   state.groups = await DB.getAll(COLLECTIONS.GROUPS);
   return JSON.parse(JSON.stringify({ ...state, currentView }));
@@ -71,7 +71,9 @@ const viewState = {
 
 const groupStore = {
   async addGroup(groupName) {
-    const group = { groupName, timestamps: [] };
+
+    // Here is the group model
+    const group = { groupName, timestamps: [] }; 
     const id = await DB.add(COLLECTIONS.GROUPS, group);
     state.groups[id] = group;
     return id;

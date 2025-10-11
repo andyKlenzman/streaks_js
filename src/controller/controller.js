@@ -168,6 +168,7 @@ const renderApp = async () => {
 
   document.body.append(root);
 
+  // 
   for (const [id, group] of Object.entries(state.groups)) {
     const groupWrapper = buildGroupElement(id, group);
     list.append(groupWrapper);
