@@ -140,7 +140,7 @@ const handleManualTimestamp = async (input, list) => {
   const timestamp = new Date(value).toISOString();
   await Model.addTimestampToSelectedGroups(timestamp);
 
-  Model.state.selectedGroups.forEach((groupId) => {
+  Model.getSelectedGroups().forEach((groupId) => {
     const groupComponent = list.querySelector(`[id="${groupId}"]`);
     const ul = groupComponent?.querySelector("ul");
     if (!ul) return;

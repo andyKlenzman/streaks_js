@@ -164,5 +164,6 @@ export const Model = {
 
   getStreakDataForGroup: streakStore.getStreakDataForGroup,
 
-  state,
+  getSelectedGroups: () => [...state.selectedGroups],
+  getSelectedTimestamps: () => ({ ...state.selectedTimestamps }),
 };
