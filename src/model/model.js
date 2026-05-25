@@ -1,6 +1,10 @@
 import { createDB, DB_SOURCES } from "./dataAccess/dataAccessInterface";
 import { runStreaks } from "./streaks";
-const DB = createDB(DB_SOURCES.firebase);
+
+const dbSource = import.meta.env.VITE_DB_SOURCE === DB_SOURCES.browser
+  ? DB_SOURCES.browser
+  : DB_SOURCES.firebase;
+const DB = createDB(dbSource);
 
 export const COLLECTIONS = {
   GROUPS: "groups",
