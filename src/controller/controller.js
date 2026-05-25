@@ -122,14 +122,27 @@ const handleAddTimestamp = async (list) => {
 };
 
 const handleDelete = async (list) => {
+  const groupsToDelete = Model.getSelectedGroups();
+  const timestampsToDelete = Model.getSelectedTimestamps();
+
   await Model.deleteSelectedGroups();
-  const state = await Model.deleteSelectedTimestamps();
+  await Model.deleteSelectedTimestamps();
 
-  list.innerHTML = "";
+  // Remove deleted groups from the DOM
+  for (const id of groupsToDelete) {
+    list.querySelector(`[id="${id}"]`)?.remove();
+  }
 
-  for (const [id, group] of Object.entries(state.groups)) {
-    const groupWrapper = buildGroupElement(id, group);
-    list.append(groupWrapper);
+  // Remove deleted timestamps from remaining group elements
+  for (const [groupId, timestamps] of Object.entries(timestampsToDelete)) {
+    const groupComponent = list.querySelector(`[id="${groupId}"]`);
+    if (!groupComponent) continue;
+
+    for (const ts of timestamps) {
+      groupComponent.querySelector(`[data-id="${ts}"]`)?.remove();
+    }
+
+    updateGroupStreakSubtext(groupId, groupComponent);
   }
 };
 
