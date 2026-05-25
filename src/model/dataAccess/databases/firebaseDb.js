@@ -15,9 +15,12 @@ import { db } from "../../../../firebase-config.js";
 // Public API
 ////////////////////////////////////////////////////
 export const firebaseDB = {
-  async getAll(collectionName) {
+  async getAll(collectionName, userId) {
     try {
-      const q = query(collection(db, collectionName));
+      const q = query(
+        collection(db, collectionName),
+        where("userId", "==", userId),
+      );
       const snap = await getDocs(q);
       const docs = {};
 
@@ -64,9 +67,12 @@ export const firebaseDB = {
     }
   },
 
-  async add(collectionName, data) {
+  async add(collectionName, data, userId) {
     try {
-      const docRef = await addDoc(collection(db, collectionName), data);
+      const docRef = await addDoc(collection(db, collectionName), {
+        ...data,
+        userId,
+      });
       return docRef.id;
     } catch (error) {
       console.error("firebaseDB: add:", error);

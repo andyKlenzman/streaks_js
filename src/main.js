@@ -4,5 +4,5 @@ import renderApp from "./controller/controller";
 const root = document.body;
 mountLoginGate({
   root,
-  onReady: () => renderApp(),
+  onReady: (user) => renderApp(user),
 });

@@ -28,12 +28,14 @@ const state = {
   selectedTimestamps: {},
 };
 
+let currentUserId = null;
+
 //////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////
 // TODO: Do I need this?? Prob wheen firebase gets involeved
 const syncGroups = async () => {
-  state.groups = await DB.getAll(COLLECTIONS.GROUPS);
+  state.groups = await DB.getAll(COLLECTIONS.GROUPS, currentUserId);
   return JSON.parse(JSON.stringify(state));
 };
 
@@ -58,7 +60,7 @@ const statusState = {
 const groupStore = {
   async addGroup(groupName) {
     const group = { groupName, timestamps: [] };
-    const id = await DB.add(COLLECTIONS.GROUPS, group);
+    const id = await DB.add(COLLECTIONS.GROUPS, group, currentUserId);
     state.groups[id] = group;
     return id;
   },
@@ -147,7 +149,10 @@ const timestampStore = {
 //////////////////////////////////////////////////////
 
 export const Model = {
-  init: () => syncGroups(),
+  init: (uid) => {
+    currentUserId = uid;
+    return syncGroups();
+  },
 
   getState: () => syncGroups(),
 

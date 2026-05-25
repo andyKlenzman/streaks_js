@@ -14,7 +14,7 @@ function save() {
 }
 
 export const browserDb = {
-  async getAll(collectionName) {
+  async getAll(collectionName, _userId) {
     const collection = store[collectionName] || {};
     return collection;
   },
@@ -33,7 +33,7 @@ export const browserDb = {
       .map(([id, doc]) => ({ id, ...doc }));
   },
 
-  async add(collectionName, data) {
+  async add(collectionName, data, _userId) {
     const id = crypto.randomUUID();
     if (!store[collectionName]) store[collectionName] = {};
 

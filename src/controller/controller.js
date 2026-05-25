@@ -160,8 +160,8 @@ const handleManualTimestamp = async (input, list) => {
 // Controller Entry Point
 //////////////////////////////////////////////////////
 
-const renderApp = async () => {
-  const state = await Model.init();
+const renderApp = async (user) => {
+  const state = await Model.init(user.uid);
 
   const { root, list } = createAppView(
     VIEW_MODES,
