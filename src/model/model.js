@@ -102,14 +102,14 @@ const streakStore = {
 
 const timestampStore = {
   async addTimestampToSelectedGroups(timestamp = new Date().toISOString()) {
-    const updatedGroups = [];
-
-    for (const id of state.selectedGroups) {
-      const doc = await DB.getById(COLLECTIONS.GROUPS, id);
-      doc.timestamps.push(timestamp);
-      await DB.update(COLLECTIONS.GROUPS, id, doc);
-      updatedGroups.push({ id, timestamps: [...doc.timestamps] });
-    }
+    const updatedGroups = await Promise.all(
+      state.selectedGroups.map(async (id) => {
+        const doc = await DB.getById(COLLECTIONS.GROUPS, id);
+        doc.timestamps.push(timestamp);
+        await DB.update(COLLECTIONS.GROUPS, id, doc);
+        return { id, timestamps: [...doc.timestamps] };
+      }),
+    );
 
     return { timestamp, updatedGroups };
   },
