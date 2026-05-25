@@ -11,11 +11,6 @@ export const COLLECTIONS = {
   GROUPS: "groups",
 };
 
-export const VIEW_MODES = {
-  FOCUS: "Focus",
-  EDIT: "Edit",
-};
-
 export const STATUS = {
   IDLE: "Idle",
   LOADING: "Loading",
@@ -25,7 +20,7 @@ export const STATUS = {
 };
 
 //////////////////////////////////////////////////////
-// State & View State
+// State
 //////////////////////////////////////////////////////
 const state = {
   groups: {},
@@ -33,15 +28,13 @@ const state = {
   selectedTimestamps: {},
 };
 
-let currentView = VIEW_MODES.FOCUS;
-
 //////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////
 // TODO: Do I need this?? Prob wheen firebase gets involeved
 const syncGroups = async () => {
   state.groups = await DB.getAll(COLLECTIONS.GROUPS);
-  return JSON.parse(JSON.stringify({ ...state, currentView }));
+  return JSON.parse(JSON.stringify(state));
 };
 
 //////////////////////////////////////////////////////
@@ -56,18 +49,6 @@ const statusState = {
     console.log("Status updated:", appStatus);
   },
   getStatus: () => appStatus,
-};
-
-//////////////////////////////////////////////////////
-// ViewState
-//////////////////////////////////////////////////////
-
-const viewState = {
-  changeCurrentView: (newMode) => {
-    currentView = newMode;
-    return currentView;
-  },
-  getCurrentView: () => currentView,
 };
 
 //////////////////////////////////////////////////////
@@ -169,9 +150,6 @@ export const Model = {
   init: () => syncGroups(),
 
   getState: () => syncGroups(),
-
-  getCurrentView: viewState.getCurrentView,
-  changeCurrentView: viewState.changeCurrentView,
 
   addGroup: groupStore.addGroup,
   deleteSelectedGroups: groupStore.deleteSelectedGroups,

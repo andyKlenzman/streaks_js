@@ -1,4 +1,4 @@
-import { Model, VIEW_MODES } from "../model/model";
+import { Model } from "../model/model";
 import {
   createAppView,
   createGroupElements,
@@ -6,12 +6,23 @@ import {
 } from "../view/view";
 
 //////////////////////////////////////////////////////
+// View State
+//////////////////////////////////////////////////////
+
+export const VIEW_MODES = {
+  FOCUS: "Focus",
+  EDIT: "Edit",
+};
+
+let currentView = VIEW_MODES.FOCUS;
+
+//////////////////////////////////////////////////////
 // Utilities
 //////////////////////////////////////////////////////
 
 const applyViewMode = (el, allowedViewModes) => {
   el.dataset.viewMode = allowedViewModes.join(",");
-  if (!allowedViewModes.includes(Model.getCurrentView())) {
+  if (!allowedViewModes.includes(currentView)) {
     el.classList.add("hidden");
   } else {
     el.classList.remove("hidden");
@@ -77,7 +88,7 @@ const buildGroupElement = (id, group) => {
 //////////////////////////////////////////////////////
 
 const handleViewModeChange = (newMode) => {
-  Model.changeCurrentView(newMode);
+  currentView = newMode;
   changeViewMode(document, newMode);
 };
 
@@ -153,6 +164,7 @@ const renderApp = async () => {
   const state = await Model.init();
 
   const { root, list } = createAppView(
+    VIEW_MODES,
     handleViewModeChange,
     handleAddGroup,
     handleAddTimestamp,

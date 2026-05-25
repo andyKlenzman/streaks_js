@@ -1,5 +1,3 @@
-import { VIEW_MODES } from "../model/model";
-
 //////////////////////////////////////////////////////
 // View
 //////////////////////////////////////////////////////
@@ -137,6 +135,7 @@ export const createManualTimestampInput = () => {
 };
 
 export const createAppView = (
+  viewModes,
   onViewModeChange,
   onAddGroup,
   onAddTimestamp,
@@ -160,7 +159,7 @@ export const createAppView = (
     manualTimestampInput,
   } = createManualTimestampInput();
 
-  const dropdown = createDropdown(VIEW_MODES, onViewModeChange);
+  const dropdown = createDropdown(viewModes, onViewModeChange);
 
   // Footer wrapper
   const footerWrapper = document.createElement("div");
