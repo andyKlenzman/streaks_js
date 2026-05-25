@@ -26,4 +26,4 @@ The project is split into three components, each with their own responsibility
 ## Known Issues
 - The system is not typed! To develop it further, the code needs a clear understanding of the data it is handling and must be refactored into TS
 
-- 
+-

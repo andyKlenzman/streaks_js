@@ -1,5 +1,3 @@
-import { VIEW_MODES } from "../model/model";
-
 //////////////////////////////////////////////////////
 // View
 //////////////////////////////////////////////////////
@@ -7,14 +5,14 @@ import { VIEW_MODES } from "../model/model";
 // Atoms
 //////////////////////////////////////////////////////
 export const createButtonElement = (textContent) => {
-  let button = document.createElement("button");
+  const button = document.createElement("button");
   button.textContent = textContent;
 
   return button;
 };
 
 export const createGroupList = () => {
-  let groupList = document.createElement("ul");
+  const groupList = document.createElement("ul");
 
   return groupList;
 };
@@ -61,14 +59,14 @@ export const createDropdown = (options, onChange) => {
 };
 
 export const createGroupEntry = (timestamp, onCheckboxToggle) => {
-  let entryWrapper = document.createElement("li");
+  const entryWrapper = document.createElement("li");
   entryWrapper.className = "flex-row";
   entryWrapper.dataset.id = timestamp;
 
-  let entryText = document.createElement("p");
+  const entryText = document.createElement("p");
   entryText.textContent = timestamp;
 
-  let entryCheckbox = document.createElement("input");
+  const entryCheckbox = document.createElement("input");
   entryCheckbox.type = "checkbox";
   entryCheckbox.addEventListener("change", () => onCheckboxToggle()); // TODO: align with implementation of other checkbox and use that to define boundaries
 
@@ -78,14 +76,14 @@ export const createGroupEntry = (timestamp, onCheckboxToggle) => {
 };
 
 export const createInputElements = () => {
-  let inputWrapper = document.createElement("div");
+  const inputWrapper = document.createElement("div");
   inputWrapper.className = "flex-row";
 
-  let inputField = document.createElement("input");
+  const inputField = document.createElement("input");
   inputField.type = "text";
   inputField.placeholder = "group name";
 
-  let inputButton = createButtonElement("enter");
+  const inputButton = createButtonElement("enter");
 
   inputWrapper.append(inputField, inputButton);
 
@@ -93,25 +91,25 @@ export const createInputElements = () => {
 };
 
 export const createGroupElements = (id, name, onCheckboxToggle) => {
-  let groupWrapper = document.createElement("div");
+  const groupWrapper = document.createElement("div");
   groupWrapper.id = id;
 
-  let groupHeaderWrapper = document.createElement("div");
+  const groupHeaderWrapper = document.createElement("div");
   groupHeaderWrapper.classList.add("flex-row");
 
-  let groupCheckbox = document.createElement("input");
+  const groupCheckbox = document.createElement("input");
   groupCheckbox.type = "checkbox";
   groupCheckbox.addEventListener("change", () => onCheckboxToggle(id));
 
-  let groupName = document.createElement("h3");
+  const groupName = document.createElement("h3");
   groupName.textContent = name;
 
-  let groupSubtext = document.createElement("p");
+  const groupSubtext = document.createElement("p");
   groupSubtext.classList.add("group-subtext");
 
   groupHeaderWrapper.append(groupCheckbox, groupName, groupSubtext);
 
-  let groupEntries = document.createElement("ul");
+  const groupEntries = document.createElement("ul");
 
   groupWrapper.append(groupHeaderWrapper, groupEntries);
 
@@ -137,11 +135,12 @@ export const createManualTimestampInput = () => {
 };
 
 export const createAppView = (
+  viewModes,
   onViewModeChange,
   onAddGroup,
   onAddTimestamp,
   onDelete,
-  onManualTimestamp
+  onManualTimestamp,
 ) => {
   const root = document.createElement("div");
 
@@ -160,7 +159,7 @@ export const createAppView = (
     manualTimestampInput,
   } = createManualTimestampInput();
 
-  const dropdown = createDropdown(VIEW_MODES, onViewModeChange);
+  const dropdown = createDropdown(viewModes, onViewModeChange);
 
   // Footer wrapper
   const footerWrapper = document.createElement("div");
@@ -183,7 +182,7 @@ export const createAppView = (
   addTimestampButton.addEventListener("click", () => onAddTimestamp(list));
   deleteButton.addEventListener("click", () => onDelete(list));
   manualTimestampButton.addEventListener("click", () =>
-    onManualTimestamp(manualTimestampInput, list)
+    onManualTimestamp(manualTimestampInput, list),
   );
 
   root.append(title, inputWrapper, list, footerWrapper);

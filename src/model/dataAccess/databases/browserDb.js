@@ -1,6 +1,6 @@
 const STORAGE_KEY = "json_file_db";
 
-let store = load();
+const store = load();
 
 function load() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -14,7 +14,7 @@ function save() {
 }
 
 export const browserDb = {
-  async getAll(collectionName) {
+  async getAll(collectionName, _userId) {
     const collection = store[collectionName] || {};
     return collection;
   },
@@ -33,7 +33,7 @@ export const browserDb = {
       .map(([id, doc]) => ({ id, ...doc }));
   },
 
-  async add(collectionName, data) {
+  async add(collectionName, data, _userId) {
     const id = crypto.randomUUID();
     if (!store[collectionName]) store[collectionName] = {};
 
@@ -44,7 +44,7 @@ export const browserDb = {
   },
 
   async update(collectionName, id, data) {
-    if (store[collectionName] && store[collectionName][id]) {
+    if (store[collectionName]?.[id]) {
       store[collectionName][id] = {
         ...store[collectionName][id],
         ...data,

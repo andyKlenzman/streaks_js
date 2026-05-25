@@ -1,28 +1,31 @@
-import { db } from "../../../../firebase-config.js";
 import {
-  collection,
   addDoc,
+  collection,
   deleteDoc,
-  getDoc,
   doc,
-  query,
-  where,
+  getDoc,
   getDocs,
+  query,
   updateDoc,
+  where,
 } from "firebase/firestore";
+import { db } from "../../../../firebase-config.js";
 
 ////////////////////////////////////////////////////
 // Public API
 ////////////////////////////////////////////////////
 export const firebaseDB = {
-  async getAll(collectionName) {
+  async getAll(collectionName, userId) {
     try {
-      const q = query(collection(db, collectionName));
+      const q = query(
+        collection(db, collectionName),
+        where("userId", "==", userId),
+      );
       const snap = await getDocs(q);
-      let docs = {};
+      const docs = {};
 
       for (const doc of snap.docs) {
-        docs[doc.id] = {...doc.data()}
+        docs[doc.id] = { ...doc.data() };
       }
       return docs;
     } catch (error) {
@@ -50,7 +53,7 @@ export const firebaseDB = {
     try {
       const q = query(
         collection(db, collectionName),
-        where(field, "==", value)
+        where(field, "==", value),
       );
       const snap = await getDocs(q);
 
@@ -64,9 +67,12 @@ export const firebaseDB = {
     }
   },
 
-  async add(collectionName, data) {
+  async add(collectionName, data, userId) {
     try {
-      const docRef = await addDoc(collection(db, collectionName), data);
+      const docRef = await addDoc(collection(db, collectionName), {
+        ...data,
+        userId,
+      });
       return docRef.id;
     } catch (error) {
       console.error("firebaseDB: add:", error);
@@ -99,7 +105,7 @@ export const firebaseDB = {
       // TODO: fuegen length sanity check hinzu max 200 zB
 
       const deletePromises = snapshot.docs.map((document) =>
-        deleteDoc(doc(db, collectionName, document.id))
+        deleteDoc(doc(db, collectionName, document.id)),
       );
 
       await Promise.all(deletePromises);

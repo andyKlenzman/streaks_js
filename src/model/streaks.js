@@ -19,7 +19,7 @@ export const getIntervalMap = (valueA, valueB, interval) => {
     endValue = valueA;
   }
 
-  let intervalMap = [];
+  const intervalMap = [];
 
   while (endValue >= currentInterval) {
     intervalMap.push(currentInterval);
@@ -43,13 +43,13 @@ export const getTimeProperties = (timestamp) => {
   let startOfDayLocal = new Date(
     date.getFullYear(),
     date.getMonth(),
-    date.getDate()
+    date.getDate(),
   );
 
   let startOfTomorrowLocal = new Date(
     date.getFullYear(),
     date.getMonth(),
-    date.getDate() + 1
+    date.getDate() + 1,
   );
 
   startOfDayLocal = startOfDayLocal.getTime();
@@ -62,14 +62,17 @@ const getStreaks = (msDateArray, intervalMap) => {
   let currentStreak = 0;
   let largestStreak = 0;
   let totalCompletions = 0;
-  let totalIntervals = 0; 
-  if(intervalMap.length > 1) {
-    totalIntervals = intervalMap.length -1
+  let totalIntervals = 0;
+  if (intervalMap.length > 1) {
+    totalIntervals = intervalMap.length - 1;
   }
 
-
   for (let i = 0; i < intervalMap.length - 1; i++) {
-    let result = existsBetween(msDateArray, intervalMap[i], intervalMap[i + 1]);
+    const result = existsBetween(
+      msDateArray,
+      intervalMap[i],
+      intervalMap[i + 1],
+    );
     if (result) {
       currentStreak++;
       totalCompletions++;
@@ -99,7 +102,7 @@ export const runStreaks = (timestamps) => {
   const intervalMap = getIntervalMap(
     startOfDayLocal,
     startOfTomorrowLocal,
-    DAY_MS
+    DAY_MS,
   );
 
   const { currentStreak, totalCompletions, totalIntervals, largestStreak } =

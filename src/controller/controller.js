@@ -1,23 +1,28 @@
-import { Model, VIEW_MODES } from "../model/model";
+import { Model } from "../model/model";
 import {
+  createAppView,
   createGroupElements,
   createGroupEntry,
-  createAppView,
 } from "../view/view";
+
+//////////////////////////////////////////////////////
+// View State
+//////////////////////////////////////////////////////
+
+export const VIEW_MODES = {
+  FOCUS: "Focus",
+  EDIT: "Edit",
+};
+
+let currentView = VIEW_MODES.FOCUS;
 
 //////////////////////////////////////////////////////
 // Utilities
 //////////////////////////////////////////////////////
 
-const updateStatusBar = (statusBarElement, statusText) => {
-  if (statusBarElement) {
-    statusBarElement.textContent = `Status: ${statusText}`;
-  }
-};
-
 const applyViewMode = (el, allowedViewModes) => {
   el.dataset.viewMode = allowedViewModes.join(",");
-  if (!allowedViewModes.includes(Model.getCurrentView())) {
+  if (!allowedViewModes.includes(currentView)) {
     el.classList.add("hidden");
   } else {
     el.classList.remove("hidden");
@@ -54,10 +59,10 @@ const updateGroupStreakSubtext = (groupId, groupComponent) => {
 
 const buildGroupElement = (id, group) => {
   // Hinweis: Uneinheitliche DOM-Behandlung bewusst belassen; später refactoren.
-  let { groupWrapper, groupEntries, groupSubtext } = createGroupElements(
+  const { groupWrapper, groupEntries, groupSubtext } = createGroupElements(
     id,
     group.groupName,
-    () => Model.toggleGroupSelection(id)
+    () => Model.toggleGroupSelection(id),
   );
 
   const data = Model.getStreakDataForGroup(id);
@@ -83,7 +88,7 @@ const buildGroupElement = (id, group) => {
 //////////////////////////////////////////////////////
 
 const handleViewModeChange = (newMode) => {
-  Model.changeCurrentView(newMode);
+  currentView = newMode;
   changeViewMode(document, newMode);
 };
 
@@ -117,14 +122,27 @@ const handleAddTimestamp = async (list) => {
 };
 
 const handleDelete = async (list) => {
+  const groupsToDelete = Model.getSelectedGroups();
+  const timestampsToDelete = Model.getSelectedTimestamps();
+
   await Model.deleteSelectedGroups();
-  const state = await Model.deleteSelectedTimestamps();
+  await Model.deleteSelectedTimestamps();
 
-  list.innerHTML = "";
+  // Remove deleted groups from the DOM
+  for (const id of groupsToDelete) {
+    list.querySelector(`[id="${id}"]`)?.remove();
+  }
 
-  for (const [id, group] of Object.entries(state.groups)) {
-    const groupWrapper = buildGroupElement(id, group);
-    list.append(groupWrapper);
+  // Remove deleted timestamps from remaining group elements
+  for (const [groupId, timestamps] of Object.entries(timestampsToDelete)) {
+    const groupComponent = list.querySelector(`[id="${groupId}"]`);
+    if (!groupComponent) continue;
+
+    for (const ts of timestamps) {
+      groupComponent.querySelector(`[data-id="${ts}"]`)?.remove();
+    }
+
+    updateGroupStreakSubtext(groupId, groupComponent);
   }
 };
 
@@ -135,7 +153,7 @@ const handleManualTimestamp = async (input, list) => {
   const timestamp = new Date(value).toISOString();
   await Model.addTimestampToSelectedGroups(timestamp);
 
-  Model.state.selectedGroups.forEach((groupId) => {
+  Model.getSelectedGroups().forEach((groupId) => {
     const groupComponent = list.querySelector(`[id="${groupId}"]`);
     const ul = groupComponent?.querySelector("ul");
     if (!ul) return;
@@ -155,15 +173,16 @@ const handleManualTimestamp = async (input, list) => {
 // Controller Entry Point
 //////////////////////////////////////////////////////
 
-const renderApp = async () => {
-  const state = await Model.init();
+const renderApp = async (user) => {
+  const state = await Model.init(user.uid);
 
   const { root, list } = createAppView(
+    VIEW_MODES,
     handleViewModeChange,
     handleAddGroup,
     handleAddTimestamp,
     handleDelete,
-    handleManualTimestamp
+    handleManualTimestamp,
   );
 
   document.body.append(root);

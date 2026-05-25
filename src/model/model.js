@@ -1,14 +1,14 @@
 import { createDB, DB_SOURCES } from "./dataAccess/dataAccessInterface";
 import { runStreaks } from "./streaks";
-const DB = createDB(DB_SOURCES.firebase);
+
+const dbSource =
+  import.meta.env.VITE_DB_SOURCE === DB_SOURCES.browser
+    ? DB_SOURCES.browser
+    : DB_SOURCES.firebase;
+const DB = createDB(dbSource);
 
 export const COLLECTIONS = {
   GROUPS: "groups",
-};
-
-export const VIEW_MODES = {
-  FOCUS: "Focus",
-  EDIT: "Edit",
 };
 
 export const STATUS = {
@@ -20,7 +20,7 @@ export const STATUS = {
 };
 
 //////////////////////////////////////////////////////
-// State & View State
+// State
 //////////////////////////////////////////////////////
 const state = {
   groups: {},
@@ -28,15 +28,15 @@ const state = {
   selectedTimestamps: {},
 };
 
-let currentView = VIEW_MODES.FOCUS;
+let currentUserId = null;
 
 //////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////
 // TODO:NOWEHRE is it documented how the data is modeled....wow. I need typescript.
 const syncGroups = async () => {
-  state.groups = await DB.getAll(COLLECTIONS.GROUPS);
-  return JSON.parse(JSON.stringify({ ...state, currentView }));
+  state.groups = await DB.getAll(COLLECTIONS.GROUPS, currentUserId);
+  return JSON.parse(JSON.stringify(state));
 };
 
 //////////////////////////////////////////////////////
@@ -54,27 +54,14 @@ const statusState = {
 };
 
 //////////////////////////////////////////////////////
-// ViewState
-//////////////////////////////////////////////////////
-
-const viewState = {
-  changeCurrentView: (newMode) => {
-    currentView = newMode;
-    return currentView;
-  },
-  getCurrentView: () => currentView,
-};
-
-//////////////////////////////////////////////////////
 // Group Logic
 //////////////////////////////////////////////////////
 
 const groupStore = {
   async addGroup(groupName) {
-
     // Here is the group model
-    const group = { groupName, timestamps: [] }; 
-    const id = await DB.add(COLLECTIONS.GROUPS, group);
+    const group = { groupName, timestamps: [] };
+    const id = await DB.add(COLLECTIONS.GROUPS, group, currentUserId);
     state.groups[id] = group;
     return id;
   },
@@ -116,14 +103,14 @@ const streakStore = {
 
 const timestampStore = {
   async addTimestampToSelectedGroups(timestamp = new Date().toISOString()) {
-    let updatedGroups = [];
-
-    for (const id of state.selectedGroups) {
-      let doc = await DB.getById(COLLECTIONS.GROUPS, id);
-      doc.timestamps.push(timestamp);
-      await DB.update(COLLECTIONS.GROUPS, id, doc);
-      updatedGroups.push({ id, timestamps: [...doc.timestamps] });
-    }
+    const updatedGroups = await Promise.all(
+      state.selectedGroups.map(async (id) => {
+        const doc = await DB.getById(COLLECTIONS.GROUPS, id);
+        doc.timestamps.push(timestamp);
+        await DB.update(COLLECTIONS.GROUPS, id, doc);
+        return { id, timestamps: [...doc.timestamps] };
+      }),
+    );
 
     return { timestamp, updatedGroups };
   },
@@ -133,9 +120,9 @@ const timestampStore = {
       if (!state.groups[groupId]) continue;
       if (!state.selectedTimestamps[groupId]?.length) continue;
 
-      let doc = await DB.getById(COLLECTIONS.GROUPS, groupId);
+      const doc = await DB.getById(COLLECTIONS.GROUPS, groupId);
       doc.timestamps = doc.timestamps.filter(
-        (ts) => !state.selectedTimestamps[groupId].includes(ts)
+        (ts) => !state.selectedTimestamps[groupId].includes(ts),
       );
       await DB.update(COLLECTIONS.GROUPS, groupId, doc);
     }
@@ -163,12 +150,12 @@ const timestampStore = {
 //////////////////////////////////////////////////////
 
 export const Model = {
-  init: () => syncGroups(),
+  init: (uid) => {
+    currentUserId = uid;
+    return syncGroups();
+  },
 
   getState: () => syncGroups(),
-
-  getCurrentView: viewState.getCurrentView,
-  changeCurrentView: viewState.changeCurrentView,
 
   addGroup: groupStore.addGroup,
   deleteSelectedGroups: groupStore.deleteSelectedGroups,
@@ -183,5 +170,6 @@ export const Model = {
 
   getStreakDataForGroup: streakStore.getStreakDataForGroup,
 
-  state,
+  getSelectedGroups: () => [...state.selectedGroups],
+  getSelectedTimestamps: () => ({ ...state.selectedTimestamps }),
 };
