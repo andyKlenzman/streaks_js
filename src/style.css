@@ -1,10 +1,8 @@
-
 html {
-  width: 100%;
   width: 100vw;
-
 }
-html, body {
+html,
+body {
   padding: 0;
   overflow-x: hidden;
   box-sizing: border-box;
@@ -13,7 +11,9 @@ html, body {
   font-family: monospace;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
   max-width: 100%;
 }
@@ -21,10 +21,7 @@ html, body {
 body {
   margin: 1em;
   max-width: 600px;
-
 }
-
-
 
 h3 {
   margin: 5px;
@@ -45,7 +42,8 @@ img {
   max-width: 20em;
 }
 
-input, button {
+input,
+button {
   border: none;
   border-radius: 4px;
   max-width: 100%;
@@ -141,7 +139,7 @@ button:focus-visible {
   justify-content: center;
   font-weight: bold;
   z-index: 9999;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   bottom: 0;
 }
 
@@ -155,9 +153,6 @@ button:focus-visible {
 .hidden {
   display: none;
 }
-
-
-
 
 #login-gate {
   display: flex;
@@ -200,7 +195,6 @@ button:focus-visible {
   text-align: center;
 }
 
-
 .footer-wrapper {
   display: flex;
   flex-direction: column;
@@ -216,7 +210,6 @@ button:focus-visible {
 .footer-row > * {
   flex: 1;
 }
-
 
 .group-header + ul li {
   margin: 0.1rem 0;

@@ -1,11 +1,11 @@
 // test mal den Einheitlichkeit von wahrschiedliche datenbanken.
-import { DB, createDB, DB_SOURCES } from "./dataAccessInterface";
+import { createDB, DB, DB_SOURCES } from "./dataAccessInterface";
 
 const firebaseDB = createDB(DB_SOURCES.firebase);
 const browserDB = createDB(DB_SOURCES.browser);
 
 const COLLECTION = "test_collection";
-let TEST_DOC = {
+const TEST_DOC = {
   groupName: "test",
   timestamps: ["test", "test"],
 };
@@ -24,8 +24,8 @@ const testDataAccessInterface = async () => {
 
   console.log("testData: querying deleted collection");
 
-  let firebaseEmptyCol = await firebaseDB.getAll(COLLECTION);
-  let browserEmptyCol = await browserDB.getAll(COLLECTION);
+  const firebaseEmptyCol = await firebaseDB.getAll(COLLECTION);
+  const browserEmptyCol = await browserDB.getAll(COLLECTION);
 
   if (firebaseEmptyCol.length === 0 && browserEmptyCol.length === 0) {
     console.log("testData: deleting collection PASS");
@@ -35,18 +35,18 @@ const testDataAccessInterface = async () => {
 
   console.log("testData: adding");
 
-  let firebaseDocIdA = await firebaseDB.add(COLLECTION, TEST_DOC);
-  let browserDocIdA = await browserDB.add(COLLECTION, TEST_DOC);
-  let firebaseDocIdB = await firebaseDB.add(COLLECTION, TEST_DOC);
-  let browserDocIdB = await browserDB.add(COLLECTION, TEST_DOC);
+  const firebaseDocIdA = await firebaseDB.add(COLLECTION, TEST_DOC);
+  const browserDocIdA = await browserDB.add(COLLECTION, TEST_DOC);
+  const firebaseDocIdB = await firebaseDB.add(COLLECTION, TEST_DOC);
+  const browserDocIdB = await browserDB.add(COLLECTION, TEST_DOC);
 
   console.log("testData: Querying ");
 
-  let fbDocA = await firebaseDB.getById(COLLECTION, firebaseDocIdA);
-  let browsDocA = await browserDB.getById(COLLECTION, browserDocIdA);
+  const fbDocA = await firebaseDB.getById(COLLECTION, firebaseDocIdA);
+  const browsDocA = await browserDB.getById(COLLECTION, browserDocIdA);
 
-  let fbDocB = await firebaseDB.getById(COLLECTION, firebaseDocIdB);
-  let browsDocB = await browserDB.getById(COLLECTION, browserDocIdB);
+  const fbDocB = await firebaseDB.getById(COLLECTION, firebaseDocIdB);
+  const browsDocB = await browserDB.getById(COLLECTION, browserDocIdB);
 
   console.log("testData: firebaseDoc:", fbDocA);
   console.log("testData: browserDoc:", browsDocA);
@@ -62,15 +62,15 @@ const testDataAccessInterface = async () => {
 
   console.log("testData: getWhere");
 
-  let fbGetWhereDoc = await firebaseDB.getWhere(
+  const fbGetWhereDoc = await firebaseDB.getWhere(
     COLLECTION,
     "groupName",
-    "test"
+    "test",
   );
-  let browserGetWhereDoc = await browserDB.getWhere(
+  const browserGetWhereDoc = await browserDB.getWhere(
     COLLECTION,
     "groupName",
-    "test"
+    "test",
   );
 
   console.log("testData: firebaseDoc:", fbGetWhereDoc);
@@ -84,24 +84,24 @@ const testDataAccessInterface = async () => {
 
   console.log("testData: update");
 
-  let firebaseDBupdateDoc = await firebaseDB.update(
+  const firebaseDBupdateDoc = await firebaseDB.update(
     COLLECTION,
     firebaseDocIdA,
     {
       name: "New Name",
-    }
+    },
   );
-  let browserDBUpdateDoc = await browserDB.update(COLLECTION, browserDocIdA, {
+  const browserDBUpdateDoc = await browserDB.update(COLLECTION, browserDocIdA, {
     name: "New Name",
   });
 
   const fbDocAfterUpdateA = await firebaseDB.getById(
     COLLECTION,
-    firebaseDocIdA
+    firebaseDocIdA,
   );
   const browsDocAfterUpdateA = await browserDB.getById(
     COLLECTION,
-    browserDocIdA
+    browserDocIdA,
   );
 
   console.log(fbDocAfterUpdateA, browsDocAfterUpdateA);
@@ -116,28 +116,26 @@ const testDataAccessInterface = async () => {
 
   const firebaseDBDeleteDocId = await firebaseDB.deleteById(
     COLLECTION,
-    firebaseDocIdA
+    firebaseDocIdA,
   );
   const browsDBDeleteDocId = await browserDB.deleteById(
     COLLECTION,
-    browserDocIdA
+    browserDocIdA,
   );
 
   console.log(firebaseDBDeleteDocId, browsDBDeleteDocId);
 
   const fbFailedDoc = await firebaseDB.getById(
     COLLECTION,
-    firebaseDBDeleteDocId
+    firebaseDBDeleteDocId,
   );
   const browsFailedDoc = await browserDB.getById(
     COLLECTION,
-    browsDBDeleteDocId
+    browsDBDeleteDocId,
   );
 
   await firebaseDB.deleteAll(COLLECTION);
   await browserDB.deleteAll(COLLECTION);
-
-
 };
 
 export default testDataAccessInterface;

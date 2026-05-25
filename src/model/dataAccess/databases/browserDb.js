@@ -1,6 +1,6 @@
 const STORAGE_KEY = "json_file_db";
 
-let store = load();
+const store = load();
 
 function load() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -44,7 +44,7 @@ export const browserDb = {
   },
 
   async update(collectionName, id, data) {
-    if (store[collectionName] && store[collectionName][id]) {
+    if (store[collectionName]?.[id]) {
       store[collectionName][id] = {
         ...store[collectionName][id],
         ...data,

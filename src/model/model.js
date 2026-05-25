@@ -1,9 +1,10 @@
 import { createDB, DB_SOURCES } from "./dataAccess/dataAccessInterface";
 import { runStreaks } from "./streaks";
 
-const dbSource = import.meta.env.VITE_DB_SOURCE === DB_SOURCES.browser
-  ? DB_SOURCES.browser
-  : DB_SOURCES.firebase;
+const dbSource =
+  import.meta.env.VITE_DB_SOURCE === DB_SOURCES.browser
+    ? DB_SOURCES.browser
+    : DB_SOURCES.firebase;
 const DB = createDB(dbSource);
 
 export const COLLECTIONS = {
@@ -118,10 +119,10 @@ const streakStore = {
 
 const timestampStore = {
   async addTimestampToSelectedGroups(timestamp = new Date().toISOString()) {
-    let updatedGroups = [];
+    const updatedGroups = [];
 
     for (const id of state.selectedGroups) {
-      let doc = await DB.getById(COLLECTIONS.GROUPS, id);
+      const doc = await DB.getById(COLLECTIONS.GROUPS, id);
       doc.timestamps.push(timestamp);
       await DB.update(COLLECTIONS.GROUPS, id, doc);
       updatedGroups.push({ id, timestamps: [...doc.timestamps] });
@@ -135,9 +136,9 @@ const timestampStore = {
       if (!state.groups[groupId]) continue;
       if (!state.selectedTimestamps[groupId]?.length) continue;
 
-      let doc = await DB.getById(COLLECTIONS.GROUPS, groupId);
+      const doc = await DB.getById(COLLECTIONS.GROUPS, groupId);
       doc.timestamps = doc.timestamps.filter(
-        (ts) => !state.selectedTimestamps[groupId].includes(ts)
+        (ts) => !state.selectedTimestamps[groupId].includes(ts),
       );
       await DB.update(COLLECTIONS.GROUPS, groupId, doc);
     }

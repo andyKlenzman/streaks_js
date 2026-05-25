@@ -1,7 +1,7 @@
 // ABOUTME: Vitest tests for the streak calculation pure functions.
 // ABOUTME: Covers getIntervalMap, getTimeProperties, and runStreaks edge cases.
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   DAY_MS,
   getIntervalMap,
@@ -101,11 +101,7 @@ describe("runStreaks", () => {
   });
 
   it("returns correct currentStreak for consecutive days", () => {
-    const timestamps = [
-      isoForDaysAgo(0),
-      isoForDaysAgo(1),
-      isoForDaysAgo(2),
-    ];
+    const timestamps = [isoForDaysAgo(0), isoForDaysAgo(1), isoForDaysAgo(2)];
     const result = runStreaks(timestamps);
     expect(result.currentStreak).toBe(3);
     expect(result.totalCompletions).toBe(3);
@@ -140,11 +136,7 @@ describe("runStreaks", () => {
   });
 
   it("counts totalCompletions and totalIntervals correctly", () => {
-    const timestamps = [
-      isoForDaysAgo(0),
-      isoForDaysAgo(1),
-      isoForDaysAgo(3),
-    ];
+    const timestamps = [isoForDaysAgo(0), isoForDaysAgo(1), isoForDaysAgo(3)];
     const result = runStreaks(timestamps);
     expect(result.totalCompletions).toBe(3);
     expect(result.totalIntervals).toBeGreaterThan(0);

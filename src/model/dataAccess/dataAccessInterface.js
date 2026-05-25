@@ -1,5 +1,5 @@
-import { firebaseDB } from "./databases/firebaseDb.js";
 import { browserDb } from "./databases/browserDb.js";
+import { firebaseDB } from "./databases/firebaseDb.js";
 
 export const DB_SOURCES = {
   firebase: "firebase",

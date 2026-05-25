@@ -1,8 +1,8 @@
 import { Model, VIEW_MODES } from "../model/model";
 import {
+  createAppView,
   createGroupElements,
   createGroupEntry,
-  createAppView,
 } from "../view/view";
 
 //////////////////////////////////////////////////////
@@ -54,10 +54,10 @@ const updateGroupStreakSubtext = (groupId, groupComponent) => {
 
 const buildGroupElement = (id, group) => {
   // Hinweis: Uneinheitliche DOM-Behandlung bewusst belassen; später refactoren.
-  let { groupWrapper, groupEntries, groupSubtext } = createGroupElements(
+  const { groupWrapper, groupEntries, groupSubtext } = createGroupElements(
     id,
     group.groupName,
-    () => Model.toggleGroupSelection(id)
+    () => Model.toggleGroupSelection(id),
   );
 
   const data = Model.getStreakDataForGroup(id);
@@ -163,7 +163,7 @@ const renderApp = async () => {
     handleAddGroup,
     handleAddTimestamp,
     handleDelete,
-    handleManualTimestamp
+    handleManualTimestamp,
   );
 
   document.body.append(root);

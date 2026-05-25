@@ -1,9 +1,9 @@
-import { auth } from "../../firebase-config";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+import { auth } from "../../firebase-config";
 
 export function mountLoginGate({ root, onReady }) {
   const wrapper = document.createElement("div");
