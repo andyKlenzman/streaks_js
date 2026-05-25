@@ -9,12 +9,6 @@ import {
 // Utilities
 //////////////////////////////////////////////////////
 
-const updateStatusBar = (statusBarElement, statusText) => {
-  if (statusBarElement) {
-    statusBarElement.textContent = `Status: ${statusText}`;
-  }
-};
-
 const applyViewMode = (el, allowedViewModes) => {
   el.dataset.viewMode = allowedViewModes.join(",");
   if (!allowedViewModes.includes(Model.getCurrentView())) {
