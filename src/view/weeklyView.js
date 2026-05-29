@@ -51,7 +51,7 @@ export const createAddHabitRow = (onAdd) => {
 // Day cell (label + circle)
 //////////////////////////////////////////////////////
 
-export const createDayCell = ({ dayOfWeek, isToday, isCompleted, isFuture, onToggle }) => {
+export const createDayCell = ({ dayOfWeek, isToday, isCompleted, isFuture, isPast, onToggle }) => {
   const cell = document.createElement('div');
   cell.className = 'day-cell';
 
@@ -64,8 +64,8 @@ export const createDayCell = ({ dayOfWeek, isToday, isCompleted, isFuture, onTog
     'day-circle' +
     (isCompleted ? ' completed' : '') +
     (isFuture ? ' future' : '');
-  circle.innerHTML = `<span class="checkmark">${CHECKMARK_SVG}</span>`;
-  circle.setAttribute('aria-label', DAY_LABELS[dayOfWeek] + (isCompleted ? ' (done)' : ''));
+  circle.innerHTML = `<span class="checkmark">${CHECKMARK_SVG}</span>${isPast ? '<span class="past-indicator" aria-hidden="true">?</span>' : ''}`;
+  circle.setAttribute('aria-label', DAY_LABELS[dayOfWeek] + (isCompleted ? ' (done)' : '') + (isPast ? ' (past)' : ''));
   circle.setAttribute('aria-pressed', String(isCompleted));
 
   if (!isFuture) {
@@ -111,7 +111,8 @@ export const createHabitCard = ({ id, name, weekDays, onDayToggle, onInfo }) => 
       isToday: day.isToday,
       isCompleted: day.isCompleted,
       isFuture: day.isFuture,
-      onToggle: (circleEl) => onDayToggle(id, day.date, circleEl),
+      isPast: day.isPast,
+      onToggle: (circleEl) => onDayToggle(id, day.date, circleEl, day.isPast),
     });
     dayRow.append(cell);
   });

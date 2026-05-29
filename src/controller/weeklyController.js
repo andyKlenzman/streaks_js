@@ -38,11 +38,14 @@ const getWeekDates = (weekOffset) => {
     const d = new Date(sunday);
     d.setDate(sunday.getDate() + i);
     const dateStr = toDateStr(d);
+    const isToday = dateStr === todayStr;
+    const isFuture = dateStr > todayStr;
     return {
       date: dateStr,
-      dayOfWeek: i, // 0 = So, 6 = Sa
-      isToday: dateStr === todayStr,
-      isFuture: dateStr > todayStr,
+      dayOfWeek: i, // 0 = Su, 6 = Sa
+      isToday,
+      isFuture,
+      isPast: !isToday && !isFuture,
     };
   });
 };
@@ -70,6 +73,20 @@ let habitListEl = null;
 let weekNavEl = null;
 let infoPopup = null;
 let openInfoGroupId = null;
+let pastEditToast = null;
+let pastEditToastTimer = null;
+
+const showPastEditWarning = () => {
+  if (!pastEditToast) {
+    pastEditToast = document.createElement('div');
+    pastEditToast.className = 'past-edit-toast';
+    pastEditToast.textContent = '⚠ Editing past entry';
+    document.body.append(pastEditToast);
+  }
+  clearTimeout(pastEditToastTimer);
+  pastEditToast.classList.add('visible');
+  pastEditToastTimer = setTimeout(() => pastEditToast.classList.remove('visible'), 2500);
+};
 
 //////////////////////////////////////////////////////
 // Info popup
@@ -125,9 +142,11 @@ document.addEventListener('click', (e) => {
 // Day toggle
 //////////////////////////////////////////////////////
 
-const toggleDay = async (groupId, dateStr, circleEl) => {
+const toggleDay = async (groupId, dateStr, circleEl, isPast) => {
   const group = groups[groupId];
   if (!group) return;
+
+  if (isPast) showPastEditWarning();
 
   const existingTs = findTimestampForDate(group.timestamps, dateStr);
 
@@ -164,6 +183,7 @@ const buildWeekDaysForGroup = (group, weekDates) =>
   weekDates.map((day) => ({
     ...day,
     isCompleted: isCompletedOnDate(group.timestamps || [], day.date),
+    isPast: day.isPast,
   }));
 
 const renderHabitList = () => {
